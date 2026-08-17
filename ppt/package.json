@@ -1,0 +1,18 @@
+{
+  "name": "ppt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "pdf-parse": "^2.4.5",
+    "pdf2json": "^4.0.3",
+    "pptxgenjs": "^4.0.1"
+  }
+}
