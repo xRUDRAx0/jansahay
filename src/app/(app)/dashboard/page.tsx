@@ -13,10 +13,17 @@ import InsightCard from '@/components/ui/InsightCard';
 import QuickActionChip from '@/components/ui/QuickActionChip';
 
 export default function DashboardPage() {
-  const { state, greeting } = useDemo();
+  const { state, greeting, rankedMatches } = useDemo();
   const profile = state.profile;
   const router = useRouter();
   const [query, setQuery] = useState('');
+
+  // Compute real stats from engine
+  const eligibleCount = rankedMatches?.filter((m: any) => m.tier === 'high' || m.tier === 'medium').length ?? state.serviceMatches?.length ?? 3;
+  const activeJourneys = state.journeys?.filter((j: any) => j.status === 'active').length ?? 1;
+  const totalDocs = state.documents?.length ?? 5;
+  const availableDocs = state.documents?.filter((d: any) => d.status === 'available').length ?? 4;
+  const pendingActions = state.actionItems?.filter((a: any) => a.status !== 'completed').length ?? 2;
 
   const handleSend = () => {
     if (query.trim()) {
@@ -55,8 +62,8 @@ export default function DashboardPage() {
           <div className="hidden sm:block pl-2">
             <AIOrb size="sm" />
           </div>
-          <input 
-            type="text" 
+          <input
+            type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
@@ -65,11 +72,11 @@ export default function DashboardPage() {
             className="flex-1 bg-transparent border-none outline-none text-gray-800 placeholder:text-gray-400 text-lg px-2"
           />
           <div className="flex items-center gap-1 pr-1">
-            <VoiceButton onTranscript={() => {}} className="p-2 text-gray-500 hover:bg-gray-100 rounded-full" />
+            <VoiceButton onTranscript={(t) => { setQuery(t); }} className="p-2 text-gray-500 hover:bg-gray-100 rounded-full" />
             <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full">
               <Paperclip className="w-5 h-5" />
             </button>
-            <button 
+            <button
               onClick={handleSend}
               className="p-2.5 bg-[#1a56db] hover:bg-blue-700 text-white rounded-full transition-colors ml-1"
             >
@@ -80,14 +87,14 @@ export default function DashboardPage() {
       </GlassCard>
 
       <div className="flex flex-wrap gap-3">
-        <QuickActionChip icon={<Search className="w-6 h-6" />} label="Find Benefits" color="blue" onClick={() => {}} />
-        <QuickActionChip icon={<CheckSquare className="w-6 h-6" />} label="Check Eligibility" color="green" onClick={() => {}} />
-        <QuickActionChip icon={<FileText className="w-6 h-6" />} label="Check Documents" color="indigo" onClick={() => {}} />
-        <QuickActionChip icon={<TrendingUp className="w-6 h-6" />} label="Track Application" color="purple" onClick={() => {}} />
-        <QuickActionChip icon={<Shield className="w-6 h-6" />} label="Verify Message" color="gray" onClick={() => {}} />
+        <QuickActionChip icon={<Search className="w-6 h-6" />} label="Find Benefits" color="blue" onClick={() => router.push('/discover')} />
+        <QuickActionChip icon={<CheckSquare className="w-6 h-6" />} label="Check Eligibility" color="green" onClick={() => router.push('/eligibility')} />
+        <QuickActionChip icon={<FileText className="w-6 h-6" />} label="Check Documents" color="indigo" onClick={() => router.push('/documents')} />
+        <QuickActionChip icon={<TrendingUp className="w-6 h-6" />} label="Track Application" color="purple" onClick={() => router.push('/tracker')} />
+        <QuickActionChip icon={<Shield className="w-6 h-6" />} label="Verify Message" color="gray" onClick={() => router.push('/verify')} />
       </div>
 
-      <motion.div 
+      <motion.div
         variants={container}
         initial="hidden"
         animate="show"
@@ -95,16 +102,16 @@ export default function DashboardPage() {
       >
         <div className="md:col-span-5 grid grid-cols-2 gap-4">
           <motion.div variants={item}>
-            <StatCard icon={<Lightbulb className="w-6 h-6" />} value="3" label="Potential Matches" iconColor="text-green-600" />
+            <StatCard icon={<Lightbulb className="w-6 h-6" />} value={String(eligibleCount)} label="Potential Matches" iconColor="text-green-600" />
           </motion.div>
           <motion.div variants={item}>
-            <StatCard icon={<Route className="w-6 h-6" />} value="1" label="Active Journeys" iconColor="text-blue-600" />
+            <StatCard icon={<Route className="w-6 h-6" />} value={String(activeJourneys)} label="Active Journeys" iconColor="text-blue-600" />
           </motion.div>
           <motion.div variants={item}>
-            <StatCard icon={<FileText className="w-6 h-6" />} value="4/5" label="Documents Ready" iconColor="text-indigo-600" />
+            <StatCard icon={<FileText className="w-6 h-6" />} value={`${availableDocs}/${totalDocs}`} label="Documents Ready" iconColor="text-indigo-600" />
           </motion.div>
           <motion.div variants={item}>
-            <StatCard icon={<Flag className="w-6 h-6" />} value="2" label="Pending Actions" iconColor="text-red-600" />
+            <StatCard icon={<Flag className="w-6 h-6" />} value={String(pendingActions)} label="Pending Actions" iconColor="text-red-600" />
           </motion.div>
         </div>
 
@@ -112,24 +119,24 @@ export default function DashboardPage() {
           <h3 className="uppercase text-xs tracking-wider text-gray-500 font-semibold px-1">JANSAHAY INSIGHTS</h3>
           <div className="space-y-3">
             <motion.div variants={item}>
-              <InsightCard 
-                type="action" 
-                title="Action Required" 
-                description="One document is missing from your active journey." 
+              <InsightCard
+                type="action"
+                title="Action Required"
+                description={pendingActions > 0 ? `You have ${pendingActions} pending action${pendingActions !== 1 ? 's' : ''} to complete.` : 'No pending actions. Great work!'}
               />
             </motion.div>
             <motion.div variants={item}>
-              <InsightCard 
-                type="opportunity" 
-                title="Opportunity Identified" 
-                description="Your uploaded income certificate may be useful for 2 services." 
+              <InsightCard
+                type="opportunity"
+                title="Opportunity Identified"
+                description={eligibleCount > 0 ? `${eligibleCount} scheme${eligibleCount !== 1 ? 's' : ''} match your profile. Your income certificate may unlock additional benefits.` : 'Tell JANSAHAY about your situation to discover matching schemes.'}
               />
             </motion.div>
             <motion.div variants={item}>
-              <InsightCard 
-                type="update" 
-                title="Application Update" 
-                description="An application action may require your attention." 
+              <InsightCard
+                type="update"
+                title="Application Update"
+                description="An application action may require your attention. Check the tracker."
               />
             </motion.div>
           </div>
@@ -138,3 +145,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+

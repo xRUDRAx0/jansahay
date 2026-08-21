@@ -15,12 +15,12 @@ export default function VerifyPage() {
   const handleAnalyze = async () => {
     if (!message.trim()) return;
     setIsAnalyzing(true);
-    // Simulate delay
-    setTimeout(() => {
-      const res = analyzeMessage(message);
+    try {
+      const res = await analyzeMessage(message);
       setResult(res);
+    } finally {
       setIsAnalyzing(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -45,14 +45,14 @@ export default function VerifyPage() {
       {result && (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
           <div className={`p-4 rounded-xl border flex items-start gap-4 ${
-            result.riskLevel === 'HIGH' ? 'bg-red-50 border-red-200 text-red-900' :
-            result.riskLevel === 'MEDIUM' ? 'bg-yellow-50 border-yellow-200 text-yellow-900' :
+            result.riskLevel === 'high' ? 'bg-red-50 border-red-200 text-red-900' :
+            result.riskLevel === 'medium' ? 'bg-yellow-50 border-yellow-200 text-yellow-900' :
             'bg-green-50 border-green-200 text-green-900'
           }`}>
-            {result.riskLevel === 'HIGH' ? <AlertTriangle className="w-8 h-8 text-red-600 shrink-0" /> : <ShieldCheck className="w-8 h-8 text-green-600 shrink-0" />}
+            {result.riskLevel === 'high' ? <AlertTriangle className="w-8 h-8 text-red-600 shrink-0" /> : <ShieldCheck className="w-8 h-8 text-green-600 shrink-0" />}
             <div>
-              <h3 className="font-bold text-lg mb-1">{result.riskLevel} RISK DETECTED</h3>
-              <p className="opacity-90">This message shows {result.riskLevel.toLowerCase()} signs of being a scam.</p>
+              <h3 className="font-bold text-lg mb-1">{String(result.riskLevel).toUpperCase()} RISK DETECTED</h3>
+              <p className="opacity-90">This message shows {String(result.riskLevel).toLowerCase()} signs of being a scam.</p>
             </div>
           </div>
 

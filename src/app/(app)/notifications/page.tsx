@@ -42,7 +42,13 @@ export default function NotificationsPage() {
       </div>
 
       <div className="space-y-4">
-        {demoNotifications.map((notification) => (
+        {demoNotifications
+          .filter(n => {
+            if (filter === 'Unread') return !n.read;
+            if (filter === 'Action Required') return n.type === 'action-required' || n.type === 'missing-document';
+            return true;
+          })
+          .map((notification) => (
           <NotificationCard
             key={notification.id}
             notification={{
