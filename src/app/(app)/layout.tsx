@@ -1,18 +1,14 @@
 'use client';
 
-import { DemoProvider } from '@/lib/demo/context';
+import { AppProvider } from '@/lib/app/provider';
 import AppShell from '@/components/layout/AppShell';
 
-export default function AppLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <DemoProvider>
+    <AppProvider>
       <AppShell>
         {children}
       </AppShell>
-    </DemoProvider>
+    </AppProvider>
   );
 }

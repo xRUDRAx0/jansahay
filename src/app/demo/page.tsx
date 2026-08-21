@@ -3,14 +3,17 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { setStoredMode } from '@/lib/app/mode';
 
 export default function DemoPage() {
   const router = useRouter();
 
   useEffect(() => {
+    // Set demo mode then redirect to dashboard
+    setStoredMode('demo');
     const timer = setTimeout(() => {
       router.push('/dashboard');
-    }, 1500);
+    }, 1200);
     return () => clearTimeout(timer);
   }, [router]);
 
@@ -22,14 +25,15 @@ export default function DemoPage() {
         transition={{ duration: 0.5 }}
         className="flex flex-col items-center space-y-4"
       >
-        <div className="w-16 h-16 rounded-full bg-[#1a56db] flex items-center justify-center text-white font-bold text-3xl shadow-lg">J</div>
-        <h2 className="text-xl font-medium text-gray-800">Loading demo experience...</h2>
+        <div className="w-16 h-16 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold text-3xl shadow-lg">J</div>
+        <h2 className="text-xl font-medium text-gray-800">Loading Demo Mode…</h2>
+        <p className="text-sm text-purple-600">Rohit Sharma · Jaipur · B.Tech Student</p>
         <div className="w-48 h-1 bg-gray-200 rounded-full overflow-hidden mt-4">
-          <motion.div 
-            className="h-full bg-[#1a56db]"
-            initial={{ width: "0%" }}
-            animate={{ width: "100%" }}
-            transition={{ duration: 1.5, ease: "easeInOut" }}
+          <motion.div
+            className="h-full bg-purple-600"
+            initial={{ width: '0%' }}
+            animate={{ width: '100%' }}
+            transition={{ duration: 1.2, ease: 'easeInOut' }}
           />
         </div>
       </motion.div>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Mic, Paperclip, Send, Search, CheckSquare, FileText, TrendingUp, Shield, Lightbulb, Route, Flag } from 'lucide-react';
 import { useDemo } from '@/lib/demo/context';
@@ -11,9 +12,10 @@ import AIOrb from '@/components/ui/AIOrb';
 import StatCard from '@/components/ui/StatCard';
 import InsightCard from '@/components/ui/InsightCard';
 import QuickActionChip from '@/components/ui/QuickActionChip';
+import { UNKNOWN } from '@/types/engine';
 
 export default function DashboardPage() {
-  const { state, greeting, rankedMatches } = useDemo();
+  const { state, greeting, rankedMatches, isDemo, citizenProfile } = useDemo() as any;
   const profile = state.profile;
   const router = useRouter();
   const [query, setQuery] = useState('');
@@ -48,10 +50,26 @@ export default function DashboardPage() {
     show: { opacity: 1, y: 0 }
   };
 
+  const isProfileEmpty = !isDemo && (!citizenProfile || citizenProfile.name === UNKNOWN || !citizenProfile.name);
+  const displayName = isDemo ? profile.name : (citizenProfile?.name && citizenProfile.name !== UNKNOWN ? citizenProfile.name : 'Guest');
+  const greetingText = (!isDemo && displayName === 'Guest') ? 'Welcome' : `${greeting}, ${displayName}`;
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+      {isDemo ? (
+        <div className="bg-purple-100 text-purple-800 p-3 rounded-lg flex items-center justify-between text-sm">
+          <span>🧪 Demo Mode — Rohit Sharma (Jaipur, Rajasthan, B.Tech, ₹2L income)</span>
+          <Link href="/" className="font-medium underline hover:text-purple-900">Switch to Live Mode</Link>
+        </div>
+      ) : isProfileEmpty ? (
+        <div className="bg-blue-100 text-blue-800 p-3 rounded-lg flex items-center justify-between text-sm">
+          <span>Tell JANSAHAY your situation to discover schemes that apply to you →</span>
+          <Link href="/agent" className="font-medium underline hover:text-blue-900">Start Journey</Link>
+        </div>
+      ) : null}
+
       <div className="space-y-2">
-          {greeting}, {profile.name}.
+        <h1 className="text-2xl font-semibold text-gray-900">{greetingText}.</h1>
         <p className="text-lg text-gray-600">
           How can JANSAHAY help you today?
         </p>

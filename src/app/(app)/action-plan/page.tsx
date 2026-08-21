@@ -1,13 +1,13 @@
 'use client';
 
 import { useDemo } from '@/lib/demo/context';
-import { demoActionItems } from '@/lib/demo/data';
 import { GlassCard } from '@/components/ui';
 import { CheckCircle2, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function ActionPlanPage() {
-  const { state, markActionComplete } = useDemo();
+  const { state, markActionComplete, isDemo } = useDemo() as any;
+  const items = state.actionItems || [];
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
@@ -16,33 +16,39 @@ export default function ActionPlanPage() {
         <p className="text-gray-600 mt-2">Steps you need to take to advance your applications.</p>
       </motion.div>
 
-      <div className="space-y-4">
-        {demoActionItems.map((item, i) => (
-          <GlassCard key={item.id} className={`p-5 flex gap-4 ${item.status === 'completed' ? 'opacity-60' : ''}`}>
-            <button 
-              onClick={() => markActionComplete(item.id)}
-              className="mt-1 flex-shrink-0"
-            >
-              <CheckCircle2 className={`w-6 h-6 ${item.status === 'completed' ? 'text-green-500' : 'text-gray-300 hover:text-green-400'}`} />
-            </button>
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                {item.priority === 'high' && <span className="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded font-medium">High Priority</span>}
-                <h3 className={`font-semibold ${item.status === 'completed' ? 'line-through text-gray-500' : 'text-gray-900'}`}>
-                  {item.title}
-                </h3>
-              </div>
-              <p className="text-gray-600 text-sm mb-2">{item.description}</p>
-              {item.dueDate && (
-                <div className="flex items-center gap-1 text-xs text-gray-500">
-                  <Clock className="w-3.5 h-3.5" />
-                  <span>Due: {item.dueDate}</span>
+      {items.length === 0 && !isDemo ? (
+        <div className="p-8 text-center bg-gray-50 border border-dashed border-gray-300 rounded-xl">
+          <p className="text-gray-500">No action items yet. Start a journey to see personalized next steps.</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {items.map((item: any) => (
+            <GlassCard key={item.id} className={`p-5 flex gap-4 ${item.status === 'completed' ? 'opacity-60' : ''}`}>
+              <button 
+                onClick={() => markActionComplete(item.id)}
+                className="mt-1 flex-shrink-0"
+              >
+                <CheckCircle2 className={`w-6 h-6 ${item.status === 'completed' ? 'text-green-500' : 'text-gray-300 hover:text-green-400'}`} />
+              </button>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  {item.priority === 'high' && <span className="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded font-medium">High Priority</span>}
+                  <h3 className={`font-semibold ${item.status === 'completed' ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+                    {item.title}
+                  </h3>
                 </div>
-              )}
-            </div>
-          </GlassCard>
-        ))}
-      </div>
+                <p className="text-gray-600 text-sm mb-2">{item.description}</p>
+                {item.dueDate && (
+                  <div className="flex items-center gap-1 text-xs text-gray-500">
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>Due: {item.dueDate}</span>
+                  </div>
+                )}
+              </div>
+            </GlassCard>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
