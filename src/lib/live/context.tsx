@@ -183,6 +183,15 @@ export function LiveProvider({ children }: { children: ReactNode }) {
   const [agentSteps, setAgentSteps] = useState<AgentActivityStep[]>([]);
   const [isAgentThinking, setIsAgentThinking] = useState(false);
 
+  // ── Key fix: always-fresh ref to citizenProfile ──────────────
+  // useCallback deps on citizenProfile would still be stale during async ops.
+  // A ref is updated synchronously on every render, so async fns always read
+  // the actual latest profile value — not the closure snapshot.
+  const profileRef = useRef<CitizenProfile>(citizenProfile);
+  useEffect(() => {
+    profileRef.current = citizenProfile;
+  }); // no dep array → runs after every render, keeps ref in sync
+
   // Persist profile to localStorage on every change
   useEffect(() => {
     try {
@@ -291,48 +300,54 @@ export function LiveProvider({ children }: { children: ReactNode }) {
     };
     setConversations(prev => [...prev, userMsg]);
 
-    // 2. Run agent pipeline with real steps
+    // 2. Read the LATEST profile from the ref (never stale)
+    const currentProfile = profileRef.current;
+
     let extractedUpdates: Partial<CitizenProfile> = {};
-    let updatedProfile = citizenProfile;
-    let matches: RankedSchemeMatch[] = rankedMatches;
+    let updatedProfile = currentProfile;
+    let matches: RankedSchemeMatch[] = [];
 
     const doneSteps = await runAgentActivity([
       {
         label: 'Understanding situation',
         fn: () => {
-          // Real: extract profile from message
-          extractedUpdates = extractProfileUpdates(content, citizenProfile);
+          // Extract from current (latest) profile, not a stale closure
+          extractedUpdates = extractProfileUpdates(content, profileRef.current);
         },
       },
       {
         label: 'Updating your profile',
         fn: () => {
           if (Object.keys(extractedUpdates).length > 0) {
-            updatedProfile = { ...citizenProfile, ...extractedUpdates };
-            setCitizenProfile({ ...updatedProfile, lastUpdated: new Date().toISOString() });
+            // Merge on top of the latest profile value (functional updater)
+            setCitizenProfile(prev => {
+              updatedProfile = { ...prev, ...extractedUpdates, lastUpdated: new Date().toISOString() };
+              return updatedProfile;
+            });
+          } else {
+            updatedProfile = profileRef.current;
           }
         },
       },
       {
         label: 'Searching knowledge base',
         fn: async () => {
-          // Small delay to represent real search
           await new Promise(r => setTimeout(r, 100));
         },
       },
       {
         label: 'Comparing requirements',
         fn: () => {
-          // Re-rank with updated profile
           try {
+            const profileToUse = updatedProfile;
             const hasInfo = (
-              updatedProfile.age !== UNKNOWN ||
-              updatedProfile.state !== UNKNOWN ||
-              updatedProfile.annualIncome !== UNKNOWN ||
-              updatedProfile.occupation !== UNKNOWN
+              profileToUse.age !== UNKNOWN ||
+              profileToUse.state !== UNKNOWN ||
+              profileToUse.annualIncome !== UNKNOWN ||
+              profileToUse.occupation !== UNKNOWN
             );
             if (hasInfo) {
-              matches = getTopMatches(updatedProfile, 15);
+              matches = getTopMatches(profileToUse, 15);
             }
           } catch {}
         },
@@ -358,7 +373,8 @@ export function LiveProvider({ children }: { children: ReactNode }) {
     };
 
     setConversations(prev => [...prev, agentMsg]);
-  }, [citizenProfile, rankedMatches, runAgentActivity]);
+  // profileRef is a ref — not needed in deps; rankedMatches removed (we recompute inside)
+  }, [runAgentActivity]);
 
   // ── Upload document ───────────────────────────────────────────
   const uploadDocument = useCallback(async (file: File): Promise<DocumentAnalysis> => {
