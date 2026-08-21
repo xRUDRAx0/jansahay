@@ -173,9 +173,16 @@ function AgentPageInner() {
         </div>
 
         {/* Input */}
-        <div className="p-4 bg-white border-t border-gray-100">
+        <div className="p-4 bg-white border-t border-gray-100 flex flex-col gap-2">
+          {/* We place VoiceButton outside the input now since it has a transcript display and is wider */}
+          <div className="flex justify-center mb-2">
+             <VoiceButton 
+               onTranscript={handleVoiceTranscript} 
+               voiceState={isAgentThinking ? 'thinking' : undefined} 
+             />
+          </div>
+          
           <div className="relative flex items-center gap-2">
-            <VoiceButton onTranscript={handleVoiceTranscript} className="shrink-0" />
             <input
               ref={inputRef}
               type="text"

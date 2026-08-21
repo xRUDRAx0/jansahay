@@ -90,7 +90,7 @@ export default function DashboardPage() {
             className="flex-1 bg-transparent border-none outline-none text-gray-800 placeholder:text-gray-400 text-lg px-2"
           />
           <div className="flex items-center gap-1 pr-1">
-            <VoiceButton onTranscript={(t) => { setQuery(t); }} className="p-2 text-gray-500 hover:bg-gray-100 rounded-full" />
+            <VoiceButton onTranscript={(t: string) => { setQuery(t); }} className="p-2 text-gray-500 hover:bg-gray-100 rounded-full" />
             <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full">
               <Paperclip className="w-5 h-5" />
             </button>

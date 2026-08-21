@@ -376,6 +376,15 @@ export function LiveProvider({ children }: { children: ReactNode }) {
     };
 
     setConversations(prev => [...prev, agentMsg]);
+    
+    // Attempt to read the response aloud
+    try {
+      const { speakText } = require('@/lib/voice/tts');
+      speakText(responseText);
+    } catch (e) {
+      console.error('Failed to run TTS', e);
+    }
+    
   // profileRef is a ref — not needed in deps; rankedMatches removed (we recompute inside)
   }, [runAgentActivity]);
 
