@@ -319,11 +319,14 @@ export function LiveProvider({ children }: { children: ReactNode }) {
         label: 'Updating your profile',
         fn: () => {
           if (Object.keys(extractedUpdates).length > 0) {
-            // Merge on top of the latest profile value (functional updater)
-            setCitizenProfile(prev => {
-              updatedProfile = { ...prev, ...extractedUpdates, lastUpdated: new Date().toISOString() };
-              return updatedProfile;
-            });
+            // Compute directly from the always-fresh ref — no side-effect inside setter
+            const newProfile: CitizenProfile = {
+              ...profileRef.current,
+              ...extractedUpdates,
+              lastUpdated: new Date().toISOString(),
+            };
+            updatedProfile = newProfile;
+            setCitizenProfile(newProfile); // plain value, not functional updater
           } else {
             updatedProfile = profileRef.current;
           }
