@@ -43,14 +43,23 @@ export default function BenefitDashboard() {
   const router = useRouter();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  const isProfileEmpty = !isDemo && (!citizenProfile || citizenProfile.name === UNKNOWN);
+  const hasAnyData = citizenProfile && (
+    citizenProfile.name !== UNKNOWN ||
+    citizenProfile.age !== UNKNOWN ||
+    citizenProfile.state !== UNKNOWN ||
+    citizenProfile.district !== UNKNOWN ||
+    citizenProfile.annualIncome !== UNKNOWN ||
+    citizenProfile.occupation !== UNKNOWN
+  );
+  
+  const showHackathonLoader = !isDemo && !hasAnyData;
   const { categoryStacks, topAction } = computeDashboardReadiness(rankedMatches);
   const categories = Object.keys(categoryStacks) as SchemeCategory[];
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
       {/* ── 0. HACKATHON DEMO LOADER ──────────────────────────────── */}
-      {isProfileEmpty && (
+      {showHackathonLoader && (
         <section className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-6 shadow-sm">
           <h2 className="text-xl font-bold text-gray-900 mb-2">HACKATHON FINAL DEMO</h2>
           <p className="text-gray-600 mb-6">Select a fictional demo persona to instantly populate the live eligibility engine, or start from scratch.</p>
@@ -89,42 +98,40 @@ export default function BenefitDashboard() {
       )}
 
       {/* ── 1. WHO AM I (Profile Snapshot & Trust Layer) ──────────── */}
-      {!isProfileEmpty && (
-        <section className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-              <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">Citizen Profile</h2>
-              <h1 className="text-3xl font-bold text-gray-900">
-                {citizenProfile.name !== UNKNOWN ? citizenProfile.name : 'Guest User'}
-              </h1>
-              <div className="flex flex-wrap gap-x-4 gap-y-2 mt-3 text-sm text-gray-600">
-                <span className="flex items-center gap-1.5">
-                  <span className="font-medium text-gray-900">Location:</span> 
-                  {citizenProfile.district !== UNKNOWN ? `${citizenProfile.district}, ` : ''}
-                  {citizenProfile.state !== UNKNOWN ? citizenProfile.state : 'Unknown'}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="font-medium text-gray-900">Age:</span> 
-                  {citizenProfile.age !== UNKNOWN ? `${citizenProfile.age} yrs` : 'Unknown'}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="font-medium text-gray-900">Income:</span> 
-                  {citizenProfile.annualIncome !== UNKNOWN ? `₹${(citizenProfile.annualIncome as number).toLocaleString()}/yr` : 'Unknown'}
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-col gap-2 items-end">
-              <TrustBadge type="user" label="Self-Reported Profile" />
-              <Link href="/profile">
-                <button className="text-sm font-medium text-blue-600 hover:underline">Update Profile →</button>
-              </Link>
+      <section className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">Citizen Profile</h2>
+            <h1 className="text-3xl font-bold text-gray-900">
+              {citizenProfile.name !== UNKNOWN ? citizenProfile.name : 'Guest User'}
+            </h1>
+            <div className="flex flex-wrap gap-x-4 gap-y-2 mt-3 text-sm text-gray-600">
+              <span className="flex items-center gap-1.5">
+                <span className="font-medium text-gray-900">Location:</span> 
+                {citizenProfile.district !== UNKNOWN ? `${citizenProfile.district}, ` : ''}
+                {citizenProfile.state !== UNKNOWN ? citizenProfile.state : 'Unknown'}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="font-medium text-gray-900">Age:</span> 
+                {citizenProfile.age !== UNKNOWN ? `${citizenProfile.age} yrs` : 'Unknown'}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="font-medium text-gray-900">Income:</span> 
+                {citizenProfile.annualIncome !== UNKNOWN ? `₹${(citizenProfile.annualIncome as number).toLocaleString()}/yr` : 'Unknown'}
+              </span>
             </div>
           </div>
-        </section>
-      )}
+          <div className="flex flex-col gap-2 items-end">
+            <TrustBadge type="user" label="Self-Reported Profile" />
+            <Link href="/profile">
+              <button className="text-sm font-medium text-blue-600 hover:underline">Update Profile →</button>
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* ── 2. WHAT SHOULD I DO NEXT? (Single Highest Impact Action) ─ */}
-      {!isProfileEmpty && topAction && (
+      {topAction && (
         <section className="bg-blue-600 rounded-2xl p-6 text-white shadow-md relative overflow-hidden">
           <div className="absolute top-0 right-0 p-8 opacity-10">
             <Activity className="w-32 h-32" />
@@ -153,8 +160,7 @@ export default function BenefitDashboard() {
         </section>
       )}
 
-      {!isProfileEmpty && (
-        <div className="grid lg:grid-cols-12 gap-8">
+      <div className="grid lg:grid-cols-12 gap-8">
           
           {/* ── 3. BENEFIT GRAPH (Visual Tree of dependencies) ──────────── */}
           <section className="lg:col-span-4 space-y-4">
@@ -305,7 +311,6 @@ export default function BenefitDashboard() {
             </div>
           </section>
         </div>
-      )}
     </div>
   );
 }
