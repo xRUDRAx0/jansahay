@@ -258,14 +258,22 @@ export function extractProfileUpdates(
   }
 
   // ── LOCATION (city + state, with fuzzy matching) ──────────────
-  // Only extract location if sentence contains location-like context
-  const hasLocationContext = /\b(?:from|in|at|belong to|live in|living in|stay in|staying in|located in|native of|i am from|i live|moved to|shifting to|i belong|my city|my town|my district|place)\b/.test(lower);
+  // IMPORTANT: Only run when there is an explicit location trigger word.
+  // Without a trigger, common English words like "income" can fuzzy-match
+  // city names (e.g. "income" → "indore" with distance 2).
+  const locationTriggerMatch = lower.match(
+    /\b(?:from|live in|living in|stay in|staying in|located in|native of|belong to|i am from|moved to|shifting to|shifted to|i belong to|my city is|my town is|my place is|i'm from|i am in)\b(.*)/,
+  );
 
-  if (hasLocationContext || lower.split(' ').length <= 8) {
-    const location = resolveLocation(lower);
-    if (location) {
-      if (location.city) updates.district = location.city;
-      if (location.state) updates.state = location.state;
+  if (locationTriggerMatch) {
+    // Only search the SUBSTRING after the trigger, not the whole sentence
+    const locationSubstring = locationTriggerMatch[1].trim();
+    if (locationSubstring.length > 0) {
+      const location = resolveLocation(locationSubstring);
+      if (location) {
+        if (location.city) updates.district = location.city;
+        if (location.state) updates.state = location.state;
+      }
     }
   }
 
