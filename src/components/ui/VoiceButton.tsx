@@ -23,7 +23,6 @@ export const VoiceButton: React.FC<VoiceButtonProps> = ({
   className
 }) => {
   const [internalState, setInternalState] = useState<VoiceState>('idle');
-  const [lang, setLang] = useState<'en-IN' | 'hi-IN'>('en-IN');
   const [recognition, setRecognition] = useState<any>(null);
   const [isSupported, setIsSupported] = useState(true);
 
@@ -37,7 +36,7 @@ export const VoiceButton: React.FC<VoiceButtonProps> = ({
     const rec = new SpeechRecognitionAPI();
     rec.continuous = false;
     rec.interimResults = false;
-    rec.lang = lang;
+    rec.lang = 'en-IN';
 
     rec.onresult = (event: any) => {
       const text = event.results[0][0].transcript;
@@ -58,11 +57,7 @@ export const VoiceButton: React.FC<VoiceButtonProps> = ({
     };
 
     setRecognition(rec);
-  }, [lang, onTranscript, internalState]);
-
-  const toggleLanguage = () => {
-    setLang(l => l === 'en-IN' ? 'hi-IN' : 'en-IN');
-  };
+  }, [onTranscript, internalState]);
 
   const handleToggle = () => {
     if (!recognition) return;
@@ -141,13 +136,6 @@ export const VoiceButton: React.FC<VoiceButtonProps> = ({
             <span className="absolute inset-0 rounded-full border-2 border-red-500 animate-ping opacity-75"></span>
           )}
           {renderIcon()}
-        </button>
-        <button 
-          onClick={toggleLanguage}
-          className="text-xs font-medium px-2 py-1 rounded bg-gray-100 text-gray-600 hover:bg-gray-200"
-          title="Toggle language"
-        >
-          {lang === 'en-IN' ? 'EN' : 'HI'}
         </button>
       </div>
       
