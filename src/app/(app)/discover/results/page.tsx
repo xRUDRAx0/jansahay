@@ -97,7 +97,7 @@ export default function DiscoveryResultsPage() {
                       View Details
                     </GlassButton>
                   </Link>
-                  <Link href={`/journeys/journey-001`}>
+                  <Link href={`/journeys/new?schemeId=${encodeURIComponent(serviceId)}&schemeName=${encodeURIComponent(title)}`}>
                     <GlassButton variant="primary" className="w-full justify-center">
                       Start Journey
                     </GlassButton>
