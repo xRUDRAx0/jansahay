@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Bot, Compass, Route, FileText, LayoutGrid, ShieldCheck, BookOpen, Bell, User, Settings, ArrowRight } from "lucide-react";
+import { Home, Bot, Compass, Route, FileText, LayoutGrid, ShieldCheck, BookOpen, Bell, User, Settings, ArrowRight, PieChart } from "lucide-react";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -20,6 +20,7 @@ export default function Sidebar() {
   ];
 
   const bottomLinks = [
+    { href: '/admin', label: 'Admin View', icon: PieChart },
     { href: '/notifications', label: 'Notifications', icon: Bell },
     { href: '/profile', label: 'Profile', icon: User },
     { href: '/settings', label: 'Settings', icon: Settings },
