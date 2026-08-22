@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { setStoredMode, clearLiveSession } from '@/lib/app/mode';
 import { Search, MapPin, CheckCircle, FileText, Folder, Award, Landmark } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 export default function LandingPage() {
   const router = useRouter();
@@ -12,6 +13,12 @@ export default function LandingPage() {
     setStoredMode('live');
     clearLiveSession();
     router.push('/dashboard');
+  }
+
+  function handleRoute(path: string) {
+    setStoredMode('live');
+    clearLiveSession();
+    router.push(path);
   }
 
   return (
@@ -37,11 +44,11 @@ export default function LandingPage() {
 
           {/* Right Nav */}
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }} className="hidden md:flex items-center gap-6 text-sm font-bold text-[#0f2147]">
-            <span className="cursor-pointer hover:underline transition-all">HOME</span>
-            <span className="cursor-pointer hover:underline transition-all">SERVICES</span>
-            <span className="cursor-pointer hover:underline transition-all">SCHEMES</span>
-            <span className="cursor-pointer hover:underline transition-all">ABOUT US</span>
-            <span className="cursor-pointer hover:underline transition-all">CONTACT</span>
+            <Link href="/" className="cursor-pointer hover:underline transition-all">HOME</Link>
+            <Link href="/journeys" className="cursor-pointer hover:underline transition-all">SERVICES</Link>
+            <Link href="/discover" className="cursor-pointer hover:underline transition-all">SCHEMES</Link>
+            <Link href="/dashboard" className="cursor-pointer hover:underline transition-all">ABOUT US</Link>
+            <Link href="/agent" className="cursor-pointer hover:underline transition-all">CONTACT</Link>
             
             <div className="flex items-center bg-[#0f2147] rounded-md overflow-hidden transition-all focus-within:ring-2 focus-within:ring-[#138808]">
               <input 
@@ -109,7 +116,7 @@ export default function LandingPage() {
               transition={{ duration: 0.5, delay: 0.2 }}
               whileHover={{ y: -5, borderColor: '#0f2147' }}
               className="bg-white rounded-lg p-5 border-2 border-gray-200 shadow-sm flex flex-col h-full transition-all relative cursor-pointer group"
-              onClick={handleTryLive}
+              onClick={() => handleRoute('/documents')}
             >
               <div className="flex gap-4 items-start mb-4">
                 <div className="p-2 border border-gray-300 rounded flex-shrink-0 group-hover:border-[#0f2147] transition-colors">
@@ -124,10 +131,10 @@ export default function LandingPage() {
                 </div>
               </div>
               <p className="text-sm text-gray-600 flex-1">
-                Aadhaar card and certification carrier and fingerprint identifications.
+                Verify identity documents securely using AI Document Doctor.
               </p>
               <button className="mt-4 w-2/3 mx-auto bg-[#0f2147] text-white py-2 rounded text-sm font-bold shadow-sm opacity-90 group-hover:opacity-100 transition-opacity">
-                View Details
+                Verify Identity
               </button>
             </motion.div>
 
@@ -138,7 +145,7 @@ export default function LandingPage() {
               transition={{ duration: 0.5, delay: 0.3 }}
               whileHover={{ y: -5, borderColor: '#0f2147' }}
               className="bg-white rounded-lg p-5 border-2 border-gray-200 shadow-sm flex flex-col h-full transition-all relative cursor-pointer group"
-              onClick={handleTryLive}
+              onClick={() => handleRoute('/discover')}
             >
               <div className="absolute top-3 right-3 bg-green-100 text-green-800 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider">
                 VERIFIED
@@ -152,10 +159,10 @@ export default function LandingPage() {
                 </div>
               </div>
               <p className="text-sm text-gray-600 flex-1">
-                Central schemes are simont folders to schemes for money bag.
+                Discover matching government schemes based on your profile instantly.
               </p>
               <button className="mt-4 w-2/3 mx-auto bg-[#0f2147] text-white py-2 rounded text-sm font-bold shadow-sm opacity-90 group-hover:opacity-100 transition-opacity">
-                View Details
+                Discover Schemes
               </button>
             </motion.div>
 
@@ -166,7 +173,7 @@ export default function LandingPage() {
               transition={{ duration: 0.5, delay: 0.4 }}
               whileHover={{ y: -5, borderColor: '#0f2147' }}
               className="bg-white rounded-lg p-5 border-2 border-gray-200 shadow-sm flex flex-col h-full transition-all relative cursor-pointer group"
-              onClick={handleTryLive}
+              onClick={() => handleRoute('/journeys')}
             >
               <div className="flex gap-4 items-start mb-4">
                 <div className="p-2 border border-gray-300 rounded flex-shrink-0 group-hover:border-[#0f2147] transition-colors">
@@ -177,10 +184,10 @@ export default function LandingPage() {
                 </div>
               </div>
               <p className="text-sm text-gray-600 flex-1">
-                Certificates for conimanitative resultin public services and certificates.
+                Step-by-step guidance for applying to public services and certificates.
               </p>
               <button className="mt-4 w-2/3 mx-auto bg-[#0f2147] text-white py-2 rounded text-sm font-bold shadow-sm opacity-90 group-hover:opacity-100 transition-opacity">
-                View Details
+                Start Journey
               </button>
             </motion.div>
 
@@ -195,16 +202,16 @@ export default function LandingPage() {
           <div className="md:col-span-1">
             <h4 className="font-bold mb-3 text-sm">Top Schemes</h4>
             <ul className="text-xs text-blue-200 space-y-2">
-              <li className="hover:text-white cursor-pointer transition-colors">Identity & Certificates</li>
-              <li className="hover:text-white cursor-pointer transition-colors">Government Certificates</li>
+              <li className="hover:text-white cursor-pointer transition-colors" onClick={() => router.push('/discover')}>Identity & Certificates</li>
+              <li className="hover:text-white cursor-pointer transition-colors" onClick={() => router.push('/discover')}>Government Certificates</li>
             </ul>
           </div>
 
           <div className="md:col-span-1">
             <h4 className="font-bold mb-3 text-sm">Quick Links</h4>
             <ul className="text-xs text-blue-200 space-y-2">
-              <li className="hover:text-white cursor-pointer transition-colors">Quick Links</li>
-              <li className="hover:text-white cursor-pointer transition-colors">Quick Links</li>
+              <li className="hover:text-white cursor-pointer transition-colors" onClick={() => router.push('/dashboard')}>Dashboard</li>
+              <li className="hover:text-white cursor-pointer transition-colors" onClick={() => router.push('/admin')}>Admin Dashboard</li>
             </ul>
           </div>
 
@@ -216,16 +223,16 @@ export default function LandingPage() {
           <div className="md:col-span-1">
             <h4 className="font-bold mb-3 text-sm">Resources</h4>
             <ul className="text-xs text-blue-200 space-y-2">
-              <li className="hover:text-white cursor-pointer transition-colors">Resources</li>
-              <li className="hover:text-white cursor-pointer transition-colors">FAQs</li>
+              <li className="hover:text-white cursor-pointer transition-colors" onClick={() => router.push('/documents')}>Document Verification</li>
+              <li className="hover:text-white cursor-pointer transition-colors" onClick={() => router.push('/agent')}>AI Agent Help</li>
             </ul>
           </div>
 
           <div className="md:col-span-1">
             <h4 className="font-bold mb-3 text-sm">Help & Support</h4>
             <ul className="text-xs text-blue-200 space-y-2">
-              <li className="hover:text-white cursor-pointer transition-colors">Help & Support</li>
-              <li className="hover:text-white cursor-pointer transition-colors">Help & Support</li>
+              <li className="hover:text-white cursor-pointer transition-colors" onClick={() => router.push('/agent')}>Talk to AI Support</li>
+              <li className="hover:text-white cursor-pointer transition-colors" onClick={() => router.push('/agent')}>Report an Issue</li>
             </ul>
           </div>
 
