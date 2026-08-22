@@ -59,7 +59,7 @@ export async function POST(req: Request) {
 // ── Gemini Vision Analysis ────────────────────────────────────────
 async function analyzeWithGemini(file: File, mimeType: string, apiKey: string): Promise<AnalysisResult> {
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
   // Convert file to base64
   const arrayBuffer = await file.arrayBuffer();
