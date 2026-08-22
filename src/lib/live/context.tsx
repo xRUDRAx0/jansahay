@@ -408,9 +408,57 @@ export function LiveProvider({ children }: { children: ReactNode }) {
 
   // ── Upload document ───────────────────────────────────────────
   const uploadDocument = useCallback(async (file: File): Promise<DocumentAnalysis> => {
-    await new Promise(r => setTimeout(r, 1500));
-    // In live mode, we can't do real OCR without a server API.
-    // Return a clean abstraction asking user to confirm fields.
+    try {
+      // Send file to the server API for Gemini Vision analysis
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch('/api/analyze-document', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+
+        // Auto-update citizen profile with extracted fields
+        if (data.profileUpdates && Object.keys(data.profileUpdates).length > 0) {
+          const cpUpdates: Partial<CitizenProfile> = {};
+          if (data.profileUpdates.name) cpUpdates.name = data.profileUpdates.name;
+          if (data.profileUpdates.age) cpUpdates.age = data.profileUpdates.age;
+          if (data.profileUpdates.gender) cpUpdates.gender = data.profileUpdates.gender;
+          if (data.profileUpdates.state) cpUpdates.state = data.profileUpdates.state;
+          if (data.profileUpdates.district) cpUpdates.district = data.profileUpdates.district;
+          if (data.profileUpdates.annualIncome) cpUpdates.annualIncome = data.profileUpdates.annualIncome;
+          if (data.profileUpdates.category) cpUpdates.category = data.profileUpdates.category;
+          if (data.profileUpdates.education) cpUpdates.education = data.profileUpdates.education;
+          
+          if (Object.keys(cpUpdates).length > 0) {
+            updateCitizenProfile(cpUpdates);
+          }
+        }
+
+        // Map server response to DocumentAnalysis type
+        return {
+          documentId: `doc-${Date.now()}`,
+          documentType: data.documentType || 'other',
+          extractedFields: (data.extractedFields || []).map((f: any) => ({
+            field: f.label || f.field,
+            value: String(f.value),
+            confidence: f.confidence || 'medium',
+            verified: false,
+          })),
+          matchedServices: [],
+          warnings: data.warnings || [],
+          confidence: data.confidence || 'low',
+          verificationNote: data.processingNote || data.disclaimer || 'Document analyzed.',
+        };
+      }
+    } catch (e) {
+      console.warn('Document analysis API failed:', e);
+    }
+
+    // Fallback if API fails
     return {
       documentId: `doc-${Date.now()}`,
       documentType: 'other',
@@ -419,13 +467,11 @@ export function LiveProvider({ children }: { children: ReactNode }) {
         { field: 'File Size', value: `${(file.size / 1024).toFixed(1)} KB`, confidence: 'high', verified: false },
       ],
       matchedServices: [],
-      warnings: [
-        'Automatic text extraction requires server-side processing. Please confirm your document details manually.',
-      ],
+      warnings: ['Document analysis temporarily unavailable. Please enter details manually.'],
       confidence: 'low',
-      verificationNote: 'Manual confirmation required. JANSAHAY does not store or transmit your documents.',
+      verificationNote: 'Manual confirmation required.',
     };
-  }, []);
+  }, [updateCitizenProfile]);
 
   const startJourney = useCallback((serviceId: string) => {
     console.log('[Live] Starting journey for:', serviceId);
