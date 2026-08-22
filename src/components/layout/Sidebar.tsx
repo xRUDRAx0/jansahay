@@ -30,11 +30,11 @@ export default function Sidebar() {
     <aside className="hidden md:flex flex-col w-64 h-screen fixed left-0 top-0 glass-sidebar z-40">
       <div className="p-6">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-[#1a56db] flex items-center justify-center text-white font-bold text-xl">
+          <div className="w-8 h-8 rounded-lg bg-[#0f2147] flex items-center justify-center text-white font-bold text-xl">
             J
           </div>
           <div className="flex flex-col">
-            <span className="text-[#1a56db] font-bold text-lg leading-tight tracking-tight">JANSAHAY</span>
+            <span className="text-[#0f2147] font-bold text-lg leading-tight tracking-tight">JANSAHAY</span>
             <span className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">Public-Service Copilot</span>
           </div>
         </Link>
@@ -50,7 +50,7 @@ export default function Sidebar() {
               href={link.href}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                 isActive 
-                  ? 'bg-[#e8eeff] text-[#1a56db]' 
+                  ? 'bg-[#e6eaf5] text-[#0f2147]' 
                   : 'text-gray-600 hover:bg-gray-100/50 hover:text-gray-900'
               }`}
             >
@@ -72,7 +72,7 @@ export default function Sidebar() {
               href={link.href}
               className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
                 isActive 
-                  ? 'bg-[#e8eeff] text-[#1a56db]' 
+                  ? 'bg-[#e6eaf5] text-[#0f2147]' 
                   : 'text-gray-600 hover:bg-gray-100/50 hover:text-gray-900'
               }`}
             >
@@ -82,7 +82,7 @@ export default function Sidebar() {
           );
         })}
         <div className="mt-4 pt-2">
-          <Link href="/discover" className="flex items-center justify-center gap-2 w-full bg-[#1a56db] hover:bg-blue-700 text-white py-2.5 px-4 rounded-xl font-medium transition-colors">
+          <Link href="/discover" className="flex items-center justify-center gap-2 w-full bg-[#0f2147] hover:bg-blue-700 text-white py-2.5 px-4 rounded-xl font-medium transition-colors">
             <ArrowRight className="w-4 h-4" />
             <span>Start Journey</span>
           </Link>

@@ -28,10 +28,10 @@ export default function MobileNav() {
               key={link.href}
               href={link.href}
               className={`flex flex-col items-center gap-1 p-2 rounded-xl min-w-[64px] ${
-                isActive ? 'text-[#1a56db]' : 'text-gray-500 hover:text-gray-900'
+                isActive ? 'text-[#0f2147]' : 'text-gray-500 hover:text-gray-900'
               }`}
             >
-              <Icon className={`w-6 h-6 ${isActive ? 'fill-[#1a56db]/10' : ''}`} />
+              <Icon className={`w-6 h-6 ${isActive ? 'fill-[#0f2147]/10' : ''}`} />
               <span className="text-[10px] font-medium">{link.label}</span>
             </Link>
           );

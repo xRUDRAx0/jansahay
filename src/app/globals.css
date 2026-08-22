@@ -2,17 +2,17 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-primary: #1a56db;
-  --color-primary-light: #e8eeff;
-  --color-sidebar: #f0f4ff;
-  --color-page: #f8faff;
+  --color-primary: #0f2147;
+  --color-primary-light: #e6eaf5;
+  --color-sidebar: #ffffff;
+  --color-page: #f0f4f8;
   --color-card: #ffffff;
   --color-text-primary: #111827;
-  --color-text-secondary: #6b7280;
+  --color-text-secondary: #4b5563;
   --color-success: #16a34a;
   --color-warning: #f59e0b;
   --color-danger: #dc2626;
-  --color-info: #2563eb;
+  --color-info: #0f2147;
 
   --font-sans: 'Inter', system-ui, sans-serif;
 }
@@ -20,6 +20,9 @@
 @layer base {
   body {
     background-color: var(--color-page);
+    /* Adding a subtle Parliament/Emblem watermark pattern globally */
+    background-image: radial-gradient(circle at 100% 50%, rgba(15, 33, 71, 0.03) 0%, transparent 40%),
+                      radial-gradient(circle at 0% 0%, rgba(15, 33, 71, 0.02) 0%, transparent 30%);
     color: var(--color-text-primary);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
@@ -28,23 +31,32 @@
 }
 
 @layer utilities {
+  /* Redefining glass-card to be solid traditional cards */
   .glass-card {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border-radius: 0.5rem; /* sharper corners */
+    transition: all 0.3s ease;
+  }
+  
+  .glass-card:hover {
+    border-color: #0f2147;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   }
 
+  /* Redefining sidebar */
   .glass-sidebar {
-    background: rgba(240, 244, 255, 0.95);
-    backdrop-filter: blur(16px);
-    border-right: 1px solid rgba(0, 0, 0, 0.06);
+    background: #ffffff;
+    border-right: 1px solid #e5e7eb;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.02);
   }
 
+  /* Redefining nav */
   .glass-nav {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(16px);
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    background: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.02);
   }
 }
 
