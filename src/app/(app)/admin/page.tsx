@@ -122,7 +122,7 @@ export default function AdminDashboardPage() {
                     <div key={age.label} className="flex items-center gap-3">
                       <span className="text-xs text-gray-500 w-24">{age.label}</span>
                       <div className="flex-1 h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                        <div className={`h-full ${age.color}`} style={{ width: \`\${age.pct}%\` }} />
+                        <div className={`h-full ${age.color}`} style={{ width: `${age.pct}%` }} />
                       </div>
                       <span className="text-xs font-medium text-gray-700 w-8">{age.pct}%</span>
                     </div>
