@@ -124,8 +124,23 @@ export default function DocumentDoctorPage() {
     const mockFile = new File(["dummy"], "aadhaar_card_alka.jpg", { type: "image/jpeg" });
     setSelectedFile(mockFile);
     
-    // Fallback UI preview
-    setPreviewUrl(null); 
+    // Fallback UI preview using inline SVG to exactly match the screenshot
+    const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" style="background:white;font-family:sans-serif;">
+      <rect width="100%" height="100%" fill="white"/>
+      <rect x="20" y="20" width="360" height="10" fill="#146c36"/>
+      <text x="30" y="60" font-size="18" font-weight="bold" fill="#000">Name</text>
+      <text x="90" y="60" font-size="18" fill="#000">Alka</text>
+      <text x="30" y="90" font-size="18" font-weight="bold" fill="#000">Female</text>
+      <text x="110" y="90" font-size="18" fill="#000">Female</text>
+      <text x="30" y="120" font-size="18" font-weight="bold" fill="#000">Date of Birth</text>
+      <text x="150" y="120" font-size="18" fill="#000">01/05/1996</text>
+      <text x="30" y="150" font-size="18" font-weight="bold" fill="#000">Address</text>
+      <text x="110" y="150" font-size="18" fill="#000">Shalimar Bagh,</text>
+      <text x="30" y="175" font-size="18" fill="#000">New Delhi, 110025</text>
+      <rect x="20" y="190" width="360" height="4" fill="#d9241b"/>
+    </svg>`;
+    const base64Svg = "data:image/svg+xml;base64," + btoa(svgContent);
+    setPreviewUrl(base64Svg); 
     
     const mockResult: AnalysisResult = {
       documentType: 'aadhaar',
