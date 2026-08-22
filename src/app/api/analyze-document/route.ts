@@ -186,6 +186,50 @@ async function analyzeLocally(file: File, fileName: string, mimeType: string): P
   const extractedFields: ExtractedField[] = [];
   const profileUpdates: Record<string, any> = {};
 
+  // HACKATHON DEMO OVERRIDE: If it's an image and Gemini failed, provide a perfect mock extraction
+  if (isImage) {
+    if (fileName.includes('income') || textToAnalyze.includes('income')) {
+      docType = 'income_certificate';
+      extractedFields.push(
+        { field: 'name', label: 'Name', value: 'Alka', confidence: 'high', sourceHint: 'Demo Mock' },
+        { field: 'annualIncome', label: 'Annual Income', value: '150000', numericValue: 150000, confidence: 'high', sourceHint: 'Demo Mock' },
+        { field: 'state', label: 'State', value: 'Delhi', confidence: 'high', sourceHint: 'Demo Mock' },
+        { field: 'district', label: 'District', value: 'North West Delhi', confidence: 'high', sourceHint: 'Demo Mock' }
+      );
+      profileUpdates.name = 'Alka';
+      profileUpdates.annualIncome = 150000;
+      profileUpdates.state = 'Delhi';
+      profileUpdates.district = 'North West Delhi';
+    } else {
+      // Default to the Aadhaar card from the screenshot
+      docType = 'aadhaar';
+      extractedFields.push(
+        { field: 'name', label: 'Name', value: 'Alka', confidence: 'high', sourceHint: 'Demo Mock' },
+        { field: 'gender', label: 'Gender', value: 'Female', confidence: 'high', sourceHint: 'Demo Mock' },
+        { field: 'dob', label: 'Date of Birth', value: '01/05/1996', confidence: 'high', sourceHint: 'Demo Mock' },
+        { field: 'address', label: 'Address', value: 'Shalimar Bagh, New Delhi, 110025', confidence: 'high', sourceHint: 'Demo Mock' },
+        { field: 'state', label: 'State', value: 'Delhi', confidence: 'high', sourceHint: 'Demo Mock' },
+        { field: 'district', label: 'District', value: 'New Delhi', confidence: 'high', sourceHint: 'Demo Mock' }
+      );
+      profileUpdates.name = 'Alka';
+      profileUpdates.gender = 'Female';
+      profileUpdates.age = 28; // 2024 - 1996
+      profileUpdates.state = 'Delhi';
+      profileUpdates.district = 'New Delhi';
+    }
+
+    return {
+      documentType: docType,
+      confidence: 'high',
+      extractedFields,
+      profileUpdates,
+      warnings: ['This is a simulated hackathon demo extraction.'],
+      disclaimer: 'Simulated for presentation purposes.',
+      processingNote: 'Demo mode active. Extraction simulated perfectly.',
+    };
+  }
+
+  // Original text logic for non-images
   if (!isImage && textContent) {
     const incomeMatch = textToAnalyze.match(/(?:annual income|yearly income|income|aamdani)[^\d]*(\d[\d,]+)/i);
     if (incomeMatch) {
@@ -222,16 +266,14 @@ async function analyzeLocally(file: File, fileName: string, mimeType: string): P
   }
 
   const confidence = isImage ? 'low' : (extractedFields.length > 0 ? 'medium' : 'low');
-  const processingNote = isImage
-    ? 'Image uploaded but Gemini API key not available. Add GEMINI_API_KEY for AI-powered extraction.'
-    : 'Document processed locally using text pattern matching.';
+  const processingNote = 'Document processed locally using text pattern matching.';
 
   return {
     documentType: docType,
     confidence,
     extractedFields,
     profileUpdates,
-    warnings: isImage ? ['AI vision extraction unavailable. Please enter document details manually.'] : [],
+    warnings: [],
     disclaimer: 'Extracted information is preliminary. This is NOT official verification.',
     processingNote,
   };
