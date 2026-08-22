@@ -310,9 +310,35 @@ export function LiveProvider({ children }: { children: ReactNode }) {
     const doneSteps = await runAgentActivity([
       {
         label: 'Understanding situation',
-        fn: () => {
-          // Extract from current (latest) profile, not a stale closure
-          extractedUpdates = extractProfileUpdates(content, profileRef.current);
+        fn: async () => {
+          // Attempt Gemini extraction first
+          try {
+            const res = await fetch('/api/extract-profile', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message: content, currentProfile: profileRef.current })
+            });
+            
+            if (res.ok) {
+              const data = await res.json();
+              if (data.updates && Object.keys(data.updates).length > 0) {
+                extractedUpdates = data.updates;
+                return; // Successfully extracted using Gemini
+              }
+            } else if (res.status === 501) {
+              console.log('Gemini API key missing, falling back to local extractor');
+            } else {
+              console.warn('Gemini extraction failed, falling back...', await res.text());
+            }
+          } catch (e) {
+            console.warn('Gemini extraction network error, falling back...', e);
+          }
+          
+          // Graceful fallback if Gemini fails or returns empty/nothing
+          const localUpdates = extractProfileUpdates(content, profileRef.current);
+          if (Object.keys(localUpdates).length > 0) {
+            extractedUpdates = localUpdates;
+          }
         },
       },
       {
