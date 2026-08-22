@@ -119,6 +119,43 @@ export default function DocumentDoctorPage() {
     }
   }, []);
 
+  // ── Hackathon Instant Demo ────────────────────────────
+  function loadDemoAadhaar() {
+    const mockFile = new File(["dummy"], "aadhaar_card_alka.jpg", { type: "image/jpeg" });
+    setSelectedFile(mockFile);
+    
+    // Fallback UI preview
+    setPreviewUrl(null); 
+    
+    const mockResult: AnalysisResult = {
+      documentType: 'aadhaar',
+      confidence: 'high',
+      extractedFields: [
+        { field: 'name', label: 'Name', value: 'Alka', confidence: 'high', sourceHint: 'Demo Mock', profileKey: 'name' },
+        { field: 'gender', label: 'Gender', value: 'Female', confidence: 'high', sourceHint: 'Demo Mock', profileKey: 'gender' },
+        { field: 'dob', label: 'Date of Birth', value: '01/05/1996', confidence: 'high', sourceHint: 'Demo Mock' },
+        { field: 'address', label: 'Address', value: 'Shalimar Bagh, New Delhi, 110025', confidence: 'high', sourceHint: 'Demo Mock' },
+        { field: 'state', label: 'State', value: 'Delhi', confidence: 'high', sourceHint: 'Demo Mock', profileKey: 'state' },
+        { field: 'district', label: 'District', value: 'New Delhi', confidence: 'high', sourceHint: 'Demo Mock', profileKey: 'district' }
+      ],
+      profileUpdates: {
+        name: 'Alka',
+        gender: 'Female',
+        age: 28,
+        state: 'Delhi',
+        district: 'New Delhi'
+      },
+      warnings: [],
+      disclaimer: 'Simulated for presentation purposes.',
+      processingNote: 'Demo mode active. Extraction simulated perfectly.'
+    };
+    
+    setAnalysisResult(mockResult);
+    const preSelected = new Set(mockResult.extractedFields.map(f => f.field));
+    setConfirmedFields(preSelected);
+    setUploadState('confirmation');
+  }
+
   // ── Call server analysis API ──────────────────────────
   async function analyzeDocument(file: File): Promise<AnalysisResult> {
     const formData = new FormData();
@@ -277,6 +314,19 @@ export default function DocumentDoctorPage() {
                 <span className="px-2 py-1 bg-gray-100 text-gray-500 rounded text-xs">Max {MAX_SIZE_MB}MB</span>
               </div>
             </div>
+          )}
+
+          {/* Hackathon Demo Button */}
+          {(uploadState === 'idle' || uploadState === 'error') && isDemo && (
+             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-4 flex flex-col items-center justify-center text-center">
+               <p className="text-sm font-medium text-blue-800 mb-2">Hackathon Presentation Mode</p>
+               <button
+                 onClick={loadDemoAadhaar}
+                 className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+               >
+                 ✨ Auto-load Demo Aadhaar
+               </button>
+             </div>
           )}
 
           {/* Supported document types */}
