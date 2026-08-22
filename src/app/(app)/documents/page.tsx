@@ -134,7 +134,26 @@ export default function DocumentDoctorPage() {
       throw new Error(err.error ?? 'Analysis failed');
     }
 
-    return res.json();
+    const data = await res.json();
+
+    // Normalize the response to ensure extractedFields always has the expected shape
+    return {
+      documentType: data.documentType || 'unknown',
+      confidence: data.confidence || 'low',
+      extractedFields: (data.extractedFields || []).map((f: any) => ({
+        field: f.field || 'unknown',
+        label: f.label || f.field || 'Unknown',
+        value: String(f.value ?? ''),
+        numericValue: f.numericValue ?? undefined,
+        confidence: f.confidence || 'medium',
+        sourceHint: f.sourceHint || 'Extracted',
+        profileKey: f.field, // map field name as profile key
+      })),
+      profileUpdates: data.profileUpdates || {},
+      warnings: data.warnings || [],
+      disclaimer: data.disclaimer || 'Extracted information is preliminary.',
+      processingNote: data.processingNote || 'Document processed.',
+    };
   }
 
   // ── Confirm selected fields → update CitizenProfile ──
